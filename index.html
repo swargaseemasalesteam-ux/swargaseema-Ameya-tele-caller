@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swargaseema Ameya — Tele-Caller Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--maroon:#8B1A1A;--gold:#C8920A;--gold-light:#F0C040;--green:#4A7C3F;--cream:#FDFAF3;--warm:#FFF8EC;--text:#1C1008;--text-mid:#4A3728;--text-light:#7A6555;--border:rgba(139,26,26,0.15);--shadow:rgba(139,26,26,0.1);}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--cream);font-family:'Outfit',sans-serif;color:var(--text);min-height:100vh;}
+
+  /* HEADER */
+  header{background:var(--maroon);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+  .header-logo{display:flex;align-items:center;gap:0.8rem;}
+  .header-logo svg{width:48px;height:48px;}
+  .header-logo-text .t1{font-size:0.6rem;letter-spacing:3px;color:rgba(255,255,255,0.6);text-transform:uppercase;}
+  .header-logo-text .t2{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:#fff;line-height:1;}
+  .header-tag{background:rgba(200,146,10,0.2);border:1px solid rgba(200,146,10,0.4);color:var(--gold);padding:0.3rem 1rem;border-radius:20px;font-size:0.75rem;font-weight:600;letter-spacing:1.5px;}
+  .header-right{display:flex;align-items:center;gap:1rem;}
+  .header-date{color:rgba(255,255,255,0.7);font-size:0.82rem;}
+
+  /* MAIN LAYOUT */
+  .main{max-width:900px;margin:0 auto;padding:2.5rem 1.5rem;}
+
+  /* PAGE TITLE */
+  .page-title{margin-bottom:2rem;}
+  .page-title h1{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--maroon);margin-bottom:0.3rem;}
+  .page-title p{color:var(--text-light);font-size:0.92rem;}
+
+  /* STATS ROW */
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;}
+  .mini-stat{background:#fff;border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;display:flex;align-items:center;gap:0.8rem;}
+  .mini-stat .ms-icon{font-size:1.5rem;}
+  .mini-stat .ms-val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--maroon);line-height:1;}
+  .mini-stat .ms-label{font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;}
+
+  /* BOOKING FORM CARD */
+  .form-card{background:#fff;border-radius:12px;border:1px solid var(--border);box-shadow:0 4px 20px var(--shadow);overflow:hidden;margin-bottom:2rem;}
+  .form-card-header{background:var(--maroon);padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+  .form-card-header h2{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#fff;}
+  .form-card-header p{color:rgba(255,255,255,0.75);font-size:0.85rem;margin-top:0.2rem;}
+  .form-card-body{padding:2rem;}
+
+  /* FORM SECTIONS */
+  .form-section{margin-bottom:1.8rem;}
+  .form-section-title{font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+  .form-group{display:flex;flex-direction:column;gap:0.4rem;}
+  .form-group.full{grid-column:1/-1;}
+  .form-group label{font-size:0.8rem;font-weight:600;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.5px;}
+  .form-group label span{color:#c0392b;margin-left:2px;}
+  .form-group input,.form-group select{padding:0.8rem 1rem;border:2px solid #e8ddd5;border-radius:6px;font-family:'Outfit',sans-serif;font-size:0.95rem;color:var(--text);background:#fff;outline:none;transition:border-color 0.2s,box-shadow 0.2s;width:100%;}
+  .form-group input:focus,.form-group select:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(139,26,26,0.08);}
+  .form-group input::placeholder{color:#bbb;}
+
+  /* DATE CARDS */
+  .date-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.7rem;}
+  .date-card{border:2px solid #e8ddd5;border-radius:8px;padding:0.9rem 0.7rem;cursor:pointer;text-align:center;transition:all 0.2s;}
+  .date-card:hover{border-color:var(--maroon);background:rgba(139,26,26,0.03);}
+  .date-card.selected{border-color:var(--maroon);background:rgba(139,26,26,0.07);}
+  .date-card .dc-day{font-size:0.7rem;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;}
+  .date-card .dc-date{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--maroon);line-height:1;margin:0.2rem 0;}
+  .date-card .dc-month{font-size:0.78rem;color:var(--text-mid);font-weight:500;}
+  .date-card.selected .dc-check{color:var(--maroon);font-size:0.7rem;margin-top:0.3rem;}
+
+  /* TIME GRID */
+  .time-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.6rem;}
+  .time-slot{border:2px solid #e8ddd5;border-radius:6px;padding:0.6rem 0.4rem;text-align:center;cursor:pointer;font-size:0.82rem;font-weight:500;color:var(--text-mid);transition:all 0.2s;}
+  .time-slot:hover{border-color:var(--maroon);color:var(--maroon);}
+  .time-slot.selected{background:var(--maroon);border-color:var(--maroon);color:#fff;}
+
+  /* MEMBER COUNTER */
+  .counter-wrap{display:flex;align-items:center;gap:1.5rem;}
+  .counter-btn{width:40px;height:40px;border-radius:50%;border:2px solid var(--maroon);color:var(--maroon);font-size:1.3rem;cursor:pointer;background:#fff;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-weight:300;}
+  .counter-btn:hover{background:var(--maroon);color:#fff;}
+  .counter-val{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:700;color:var(--maroon);min-width:50px;text-align:center;line-height:1;}
+  .counter-label{font-size:0.82rem;color:var(--text-light);}
+
+  /* SUBMIT */
+  .form-footer{display:flex;justify-content:flex-end;gap:1rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+  .btn-reset{background:transparent;border:1px solid #ddd;color:var(--text-light);padding:0.85rem 1.8rem;border-radius:6px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:0.9rem;transition:all 0.2s;}
+  .btn-reset:hover{border-color:var(--maroon);color:var(--maroon);}
+  .btn-submit{background:var(--maroon);color:#fff;border:none;padding:0.85rem 2.5rem;border-radius:6px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:0.95rem;font-weight:600;transition:all 0.3s;letter-spacing:0.5px;display:flex;align-items:center;gap:0.5rem;}
+  .btn-submit:hover{background:#6B1212;transform:translateY(-1px);box-shadow:0 6px 20px rgba(139,26,26,0.3);}
+  .btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none;}
+
+  /* RECENT BOOKINGS TABLE */
+  .recent-card{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;}
+  .recent-header{padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .recent-header h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--maroon);}
+  .recent-count{font-size:0.8rem;color:var(--text-light);background:var(--warm);border:1px solid var(--border);padding:0.25rem 0.7rem;border-radius:20px;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{background:#f9f4ec;padding:0.8rem 1rem;text-align:left;font-size:0.72rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);}
+  tbody tr{border-bottom:1px solid #f5ede5;transition:background 0.2s;}
+  tbody tr:hover{background:#fdfaf3;}
+  tbody tr:last-child{border-bottom:none;}
+  tbody td{padding:0.9rem 1rem;font-size:0.87rem;color:var(--text-mid);}
+  .td-ref{font-weight:700;color:var(--maroon);font-size:0.8rem;letter-spacing:1px;}
+  .td-name{font-weight:600;color:var(--text);}
+  .td-phone{font-size:0.8rem;color:var(--text-light);}
+  .badge-pending{background:rgba(230,81,0,0.1);color:#E65100;padding:0.25rem 0.7rem;border-radius:20px;font-size:0.75rem;font-weight:600;}
+  .badge-visited{background:rgba(46,125,50,0.1);color:#2E7D32;padding:0.25rem 0.7rem;border-radius:20px;font-size:0.75rem;font-weight:600;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:2rem;right:2rem;background:#1C1008;color:#fff;padding:1rem 1.5rem;border-radius:8px;font-size:0.9rem;font-weight:500;transform:translateY(100px);opacity:0;transition:all 0.3s;z-index:999;display:flex;align-items:center;gap:0.6rem;box-shadow:0 8px 25px rgba(0,0,0,0.2);max-width:350px;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.success{border-left:4px solid #4CAF50;}
+  .toast.error{border-left:4px solid #f44336;}
+
+  /* SUBMITTING OVERLAY */
+  .submitting{position:fixed;inset:0;background:rgba(255,255,255,0.85);display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem;z-index:500;}
+  .submitting.show{display:flex;}
+  .spinner{width:44px;height:44px;border:3px solid #f0e8e0;border-top-color:var(--maroon);border-radius:50%;animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .submitting p{color:var(--maroon);font-weight:600;}
+
+  /* VALIDATION ERROR */
+  .form-group.error input,.form-group.error select{border-color:#c0392b;}
+  .err-msg{font-size:0.75rem;color:#c0392b;margin-top:0.2rem;}
+
+  @media(max-width:700px){
+    .form-grid,.form-grid-3{grid-template-columns:1fr;}
+    .date-grid{grid-template-columns:repeat(2,1fr);}
+    .time-grid{grid-template-columns:repeat(3,1fr);}
+    .stats-row{grid-template-columns:1fr;}
+    .main{padding:1.5rem 1rem;}
+  }
+
+  /* ── MOBILE RESPONSIVE ─────────────────────────────────── */
+  @media(max-width:768px){
+    header{padding:0.9rem 1rem;flex-wrap:wrap;gap:0.5rem;}
+    .header-logo svg{width:38px;height:38px;}
+    .header-logo-text .t2{font-size:1.3rem;}
+    .header-tag{font-size:0.65rem;padding:0.25rem 0.7rem;letter-spacing:0.5px;}
+    .header-date{display:none;}
+    .main{padding:1.2rem 0.9rem;}
+    .page-title h1{font-size:1.6rem;}
+    .stats-row{grid-template-columns:1fr;gap:0.7rem;}
+    .mini-stat{padding:0.8rem 1rem;}
+    .mini-stat .ms-val{font-size:1.5rem;}
+    .form-card-header{padding:1.1rem 1.2rem;}
+    .form-card-header h2{font-size:1.2rem;}
+    .form-card-body{padding:1.2rem;}
+    .form-grid{grid-template-columns:1fr !important;}
+    .form-grid-3{grid-template-columns:1fr !important;}
+    .form-group.full{grid-column:1;}
+    .form-group input,.form-group select{font-size:1rem;padding:0.9rem 1rem;}
+    .date-grid{grid-template-columns:repeat(2,1fr);gap:0.6rem;}
+    .date-card{padding:0.8rem 0.5rem;}
+    .date-card .dc-date{font-size:1.4rem;}
+    .time-grid{grid-template-columns:repeat(3,1fr);gap:0.5rem;}
+    .time-slot{padding:0.65rem 0.3rem;font-size:0.8rem;}
+    .counter-wrap{gap:1rem;}
+    .counter-val{font-size:2rem;}
+    .counter-btn{width:36px;height:36px;font-size:1.2rem;}
+    .form-footer{flex-direction:column-reverse;gap:0.7rem;}
+    .btn-submit,.btn-reset{width:100%;justify-content:center;padding:1rem;}
+    .btn-submit{font-size:1rem;}
+    table{font-size:0.8rem;}
+    thead th{padding:0.6rem 0.5rem;font-size:0.65rem;}
+    tbody td{padding:0.7rem 0.5rem;}
+    .toast{left:1rem;right:1rem;bottom:1rem;font-size:0.85rem;}
+  }
+  @media(max-width:400px){
+    .date-grid{grid-template-columns:repeat(2,1fr);}
+    .time-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+</style>
+</head>
+<body>
+
+<!-- APPS SCRIPT URL -->
+<script>
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1AHJ7VMKPGJ-camTEOE-VDguPwVBKkCnjL1mGuB4-b2AFysTCza9kGkhfjmwX0YkO/exec";
+</script>
+
+<!-- SUBMITTING OVERLAY -->
+<div class="submitting" id="submitting">
+  <div class="spinner"></div>
+  <p>Saving booking...</p>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-logo">
+    <svg viewBox="0 0 48 48" fill="none">
+      <path d="M8 33 Q12 27 18 29 Q22 30 22 35 L22 41 Q16 42 10 39 Z" fill="#C8920A"/>
+      <path d="M40 33 Q36 27 30 29 Q26 30 26 35 L26 41 Q32 42 38 39 Z" fill="#C8920A"/>
+      <path d="M24 38 L24 18" stroke="#4A7C3F" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="18" cy="16" rx="6" ry="3.5" fill="#4A7C3F" transform="rotate(-30 18 16)"/>
+      <ellipse cx="30" cy="16" rx="6" ry="3.5" fill="#4A7C3F" transform="rotate(30 30 16)"/>
+      <ellipse cx="24" cy="11" rx="5" ry="3" fill="#5A8C50" transform="rotate(-10 24 11)"/>
+    </svg>
+    <div class="header-logo-text">
+      <div class="t1">Swargaseema's</div>
+      <div class="t2">Ameya</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-tag">📞 TELE-CALLER PORTAL</div>
+    <div class="header-date" id="headerDate"></div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- PAGE TITLE -->
+  <div class="page-title">
+    <h1>New Booking Entry</h1>
+    <p>Fill in customer details collected over the phone. All bookings are saved directly to Google Sheets.</p>
+  </div>
+
+  <!-- MINI STATS -->
+  <div class="stats-row">
+    <div class="mini-stat">
+      <div class="ms-icon">📋</div>
+      <div>
+        <div class="ms-val" id="statTotal">—</div>
+        <div class="ms-label">Total Bookings Today</div>
+      </div>
+    </div>
+    <div class="mini-stat">
+      <div class="ms-icon">⏳</div>
+      <div>
+        <div class="ms-val" id="statPending">—</div>
+        <div class="ms-label">Pending Visits</div>
+      </div>
+    </div>
+    <div class="mini-stat">
+      <div class="ms-icon">✅</div>
+      <div>
+        <div class="ms-val" id="statVisited">—</div>
+        <div class="ms-label">Visited Today</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKING FORM -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <div>
+        <h2>Customer Booking Form</h2>
+        <p>Enter all details as provided by the customer on call</p>
+      </div>
+    </div>
+    <div class="form-card-body">
+
+      <!-- CUSTOMER DETAILS -->
+      <div class="form-section">
+        <div class="form-section-title">👤 Customer Details</div>
+        <div class="form-grid">
+          <div class="form-group" id="grp-name">
+            <label>Full Name <span>*</span></label>
+            <input type="text" id="fName" placeholder="e.g. Ramesh Kumar"/>
+            <div class="err-msg" id="err-name"></div>
+          </div>
+          <div class="form-group" id="grp-phone">
+            <label>Mobile Number <span>*</span></label>
+            <input type="tel" id="fPhone" placeholder="+91 98765 43210"/>
+            <div class="err-msg" id="err-phone"></div>
+          </div>
+          <div class="form-group" id="grp-email">
+            <label>Email Address</label>
+            <input type="email" id="fEmail" placeholder="email@example.com"/>
+          </div>
+          <div class="form-group" id="grp-city">
+            <label>City / Area <span>*</span></label>
+            <input type="text" id="fCity" placeholder="e.g. Hyderabad, Mehdipatnam"/>
+            <div class="err-msg" id="err-city"></div>
+          </div>
+          <div class="form-group full" id="grp-address">
+            <label>Pickup Address for Cab <span>*</span></label>
+            <input type="text" id="fAddress" placeholder="Full address for cab pickup"/>
+            <div class="err-msg" id="err-address"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISIT DATE -->
+      <div class="form-section">
+        <div class="form-section-title">📅 Select Visit Date <span style="color:#c0392b">*</span></div>
+        <div class="date-grid" id="dateGrid"></div>
+        <div class="err-msg" id="err-date" style="margin-top:0.5rem;"></div>
+      </div>
+
+      <!-- TIME SLOT -->
+      <div class="form-section">
+        <div class="form-section-title">🕐 Select Time Slot <span style="color:#c0392b">*</span></div>
+        <div class="time-grid" id="timeGrid"></div>
+        <div class="err-msg" id="err-time" style="margin-top:0.5rem;"></div>
+      </div>
+
+      <!-- MEMBERS -->
+      <div class="form-section">
+        <div class="form-section-title">👨‍👩‍👧 Number of Members</div>
+        <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;">
+          <div class="counter-wrap">
+            <button class="counter-btn" onclick="changeMember(-1)">−</button>
+            <div class="counter-val" id="memberVal">2</div>
+            <button class="counter-btn" onclick="changeMember(1)">+</button>
+          </div>
+          <div>
+            <div style="font-weight:600;color:var(--text-mid)" id="cabLabel">🚗 Sedan (1–4 members)</div>
+            <div style="font-size:0.82rem;color:var(--text-light);margin-top:0.2rem;">Cab will be arranged based on group size</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM FOOTER -->
+      <div class="form-footer">
+        <button class="btn-reset" onclick="resetForm()">🔄 Reset Form</button>
+        <button class="btn-submit" id="btnSubmit" onclick="submitBooking()">
+          <span>✓</span> Save Booking
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RECENT BOOKINGS -->
+  <div class="recent-card">
+    <div class="recent-header">
+      <h3>Today's Bookings</h3>
+      <span class="recent-count" id="recentCount">Loading...</span>
+    </div>
+    <div id="recentTable">
+      <div style="padding:2rem;text-align:center;color:var(--text-light);">Loading bookings...</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── STATE ─────────────────────────────────────────────────────
+  let selectedDate = '';
+  let selectedTime = '';
+  let memberCount = 2;
+  let allBookings = [];
+
+  // ── INIT ──────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('headerDate').textContent =
+      new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    buildDateGrid();
+    buildTimeGrid();
+    loadStats();
+  });
+
+  // ── DATE GRID ─────────────────────────────────────────────────
+  function getUpcomingDates() {
+    const d = []; let x = new Date(); x.setDate(x.getDate() + 1);
+    while (d.length < 4) { if (x.getDay() !== 0) d.push(new Date(x)); x.setDate(x.getDate() + 1); }
+    return d;
+  }
+
+  function fmtDate(d) {
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const fullDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const fullMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return {
+      short: days[d.getDay()],
+      date: d.getDate(),
+      month: months[d.getMonth()],
+      full: `${fullDays[d.getDay()]}, ${d.getDate()} ${fullMonths[d.getMonth()]} ${d.getFullYear()}`
+    };
+  }
+
+  function buildDateGrid() {
+    const g = document.getElementById('dateGrid');
+    getUpcomingDates().forEach(d => {
+      const f = fmtDate(d);
+      const card = document.createElement('div');
+      card.className = 'date-card';
+      card.innerHTML = `<div class="dc-day">${f.short}</div><div class="dc-date">${f.date}</div><div class="dc-month">${f.month}</div><div class="dc-check" style="display:none">✓ Selected</div>`;
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.date-card').forEach(c => {
+          c.classList.remove('selected');
+          c.querySelector('.dc-check').style.display = 'none';
+        });
+        card.classList.add('selected');
+        card.querySelector('.dc-check').style.display = 'block';
+        selectedDate = f.full;
+        document.getElementById('err-date').textContent = '';
+      });
+      g.appendChild(card);
+    });
+  }
+
+  // ── TIME GRID ─────────────────────────────────────────────────
+  function buildTimeGrid() {
+    const g = document.getElementById('timeGrid');
+    const slots = [];
+    let h = 7, m = 0;
+    while (!(h === 14 && m === 30)) {
+      const s = h < 12 ? 'AM' : 'PM';
+      const dh = h > 12 ? h - 12 : h;
+      slots.push(`${dh}:${m === 0 ? '00' : '30'} ${s}`);
+      m += 30; if (m === 60) { m = 0; h++; }
+    }
+    slots.push('2:30 PM');
+    slots.forEach(slot => {
+      const el = document.createElement('div');
+      el.className = 'time-slot'; el.textContent = slot;
+      el.addEventListener('click', () => {
+        document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+        el.classList.add('selected'); selectedTime = slot;
+        document.getElementById('err-time').textContent = '';
+      });
+      g.appendChild(el);
+    });
+  }
+
+  // ── MEMBER COUNTER ────────────────────────────────────────────
+  function changeMember(d) {
+    memberCount = Math.max(1, Math.min(12, memberCount + d));
+    document.getElementById('memberVal').textContent = memberCount;
+    document.getElementById('cabLabel').textContent =
+      memberCount <= 4 ? '🚗 Sedan (1–4 members)' :
+      memberCount <= 8 ? '🚙 SUV (5–8 members)' : '🚌 Van (9+ members)';
+  }
+
+  // ── VALIDATION ────────────────────────────────────────────────
+  function validate() {
+    let ok = true;
+    const required = [
+      { id: 'fName', grp: 'grp-name', err: 'err-name', msg: 'Name is required' },
+      { id: 'fPhone', grp: 'grp-phone', err: 'err-phone', msg: 'Phone number is required' },
+      { id: 'fCity', grp: 'grp-city', err: 'err-city', msg: 'City is required' },
+      { id: 'fAddress', grp: 'grp-address', err: 'err-address', msg: 'Pickup address is required' },
+    ];
+    required.forEach(f => {
+      const val = document.getElementById(f.id).value.trim();
+      if (!val) {
+        document.getElementById(f.grp).classList.add('error');
+        document.getElementById(f.err).textContent = f.msg;
+        ok = false;
+      } else {
+        document.getElementById(f.grp).classList.remove('error');
+        document.getElementById(f.err).textContent = '';
+      }
+    });
+    if (!selectedDate) { document.getElementById('err-date').textContent = 'Please select a visit date'; ok = false; }
+    if (!selectedTime) { document.getElementById('err-time').textContent = 'Please select a time slot'; ok = false; }
+    return ok;
+  }
+
+  // ── SUBMIT ────────────────────────────────────────────────────
+  async function submitBooking() {
+    if (!validate()) return;
+    document.getElementById('submitting').classList.add('show');
+    const ref = 'AMY-' + Math.floor(100000 + Math.random() * 900000);
+    const payload = {
+      action: 'addBooking',
+      bookingRef: ref,
+      name: document.getElementById('fName').value.trim(),
+      phone: document.getElementById('fPhone').value.trim(),
+      email: document.getElementById('fEmail').value.trim(),
+      city: document.getElementById('fCity').value.trim(),
+      address: document.getElementById('fAddress').value.trim(),
+      date: selectedDate,
+      time: selectedTime,
+      members: memberCount,
+      source: 'Tele-Caller'
+    };
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      });
+      document.getElementById('submitting').classList.remove('show');
+      showToast(`✅ Booking saved! Ref: ${ref}`, 'success');
+      resetForm();
+      setTimeout(loadStats, 2000);
+    } catch(e) {
+      document.getElementById('submitting').classList.remove('show');
+      showToast('❌ Failed to save. Check connection.', 'error');
+    }
+  }
+
+  // ── RESET ─────────────────────────────────────────────────────
+  function resetForm() {
+    ['fName','fPhone','fEmail','fCity','fAddress'].forEach(id => document.getElementById(id).value = '');
+    document.querySelectorAll('.date-card').forEach(c => {
+      c.classList.remove('selected');
+      c.querySelector('.dc-check').style.display = 'none';
+    });
+    document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+    selectedDate = ''; selectedTime = ''; memberCount = 2;
+    document.getElementById('memberVal').textContent = '2';
+    document.getElementById('cabLabel').textContent = '🚗 Sedan (1–4 members)';
+    ['err-name','err-phone','err-city','err-address','err-date','err-time'].forEach(id => document.getElementById(id).textContent = '');
+    ['grp-name','grp-phone','grp-city','grp-address'].forEach(id => document.getElementById(id).classList.remove('error'));
+  }
+
+  // ── LOAD STATS (JSONP) ────────────────────────────────────────
+  function loadStats() {
+    const old = document.getElementById('stats-jsonp');
+    if (old) old.remove();
+    window.__tcCallback = function(data) {
+      allBookings = data.bookings || [];
+      const todayStr = new Date().toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+      const todayBookings = allBookings.filter(b => (b['Visit Date'] || '') === todayStr);
+      document.getElementById('statTotal').textContent = todayBookings.length;
+      document.getElementById('statPending').textContent = allBookings.filter(b => (b['Status']||'').includes('Pending')).length;
+      document.getElementById('statVisited').textContent = allBookings.filter(b => (b['Status']||'').includes('Visited')).length;
+      document.getElementById('recentCount').textContent = `${todayBookings.length} bookings today`;
+      renderRecentTable(todayBookings.length ? todayBookings : allBookings.slice(-10).reverse());
+    };
+    const s = document.createElement('script');
+    s.id = 'stats-jsonp';
+    s.src = APPS_SCRIPT_URL + '?callback=__tcCallback&t=' + Date.now();
+    document.body.appendChild(s);
+  }
+
+  function renderRecentTable(bookings) {
+    if (!bookings.length) {
+      document.getElementById('recentTable').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-light);">No bookings yet today.</div>';
+      return;
+    }
+    const rows = bookings.map(b => `
+      <tr>
+        <td><div class="td-ref">${b['Booking Ref']||'—'}</div></td>
+        <td><div class="td-name">${b['Name']||'—'}</div><div class="td-phone">${b['Mobile']||''}</div></td>
+        <td>${b['Visit Date']||'—'}</td>
+        <td>${b['Time Slot']||'—'}</td>
+        <td>${b['Members']||'—'}</td>
+        <td><span class="${(b['Status']||'').includes('Visited') ? 'badge-visited' : 'badge-pending'}">${b['Status']||'Pending'}</span></td>
+      </tr>`).join('');
+    document.getElementById('recentTable').innerHTML = `
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Ref</th><th>Customer</th><th>Date</th><th>Time</th><th>Members</th><th>Status</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
+  // ── TOAST ─────────────────────────────────────────────────────
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
+
+  // Auto refresh every 60s
+  setInterval(loadStats, 60000);
+</script>
+</body>
+</html>
