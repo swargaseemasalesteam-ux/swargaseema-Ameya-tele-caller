@@ -354,7 +354,7 @@
 
   // ── DATE GRID ─────────────────────────────────────────────────
   function getUpcomingDates() {
-    const d = []; let x = new Date(); x.setDate(x.getDate() + 1);
+    const d = []; let x = new Date();
     while (d.length < 4) { if (x.getDay() !== 0) d.push(new Date(x)); x.setDate(x.getDate() + 1); }
     return d;
   }
