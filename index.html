@@ -502,37 +502,58 @@
     ['grp-name','grp-phone','grp-city','grp-address'].forEach(id => document.getElementById(id).classList.remove('error'));
   }
 
+  // ── DATE HELPERS (global scope) ──────────────────────────────
+  const TC_DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const TC_MONS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function tcCleanDate(raw) {
+    if (!raw) return '—';
+    raw = String(raw).trim();
+    if (/^[A-Za-z]+,\s*\d+\s+[A-Za-z]+\s+\d{4}$/.test(raw)) return raw;
+    const d = new Date(raw);
+    if (!isNaN(d.getTime())) {
+      const ist = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
+      return TC_DAYS[ist.getUTCDay()] + ', ' + ist.getUTCDate() + ' ' + TC_MONS[ist.getUTCMonth()] + ' ' + ist.getUTCFullYear();
+    }
+    return raw;
+  }
+
+  function tcTodayStr() {
+    const n = new Date();
+    return TC_DAYS[n.getDay()] + ', ' + n.getDate() + ' ' + TC_MONS[n.getMonth()] + ' ' + n.getFullYear();
+  }
+
   // ── LOAD STATS (JSONP) ────────────────────────────────────────
   function loadStats() {
-    const old = document.getElementById('stats-jsonp');
-    if (old) old.remove();
+    const oldEl = document.getElementById('stats-jsonp');
+    if (oldEl) oldEl.remove();
+
+    // Show error if no response within 8 seconds
+    const timer = setTimeout(function() {
+      document.getElementById('recentTable').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-light);">Could not load bookings. Please refresh the page.</div>';
+      document.getElementById('recentCount').textContent = '0 bookings today';
+      ['statTotal','statPending','statVisited'].forEach(function(id){ document.getElementById(id).textContent = '0'; });
+    }, 8000);
+
     window.__tcCallback = function(data) {
+      clearTimeout(timer);
       allBookings = data.bookings || [];
-      const now = new Date();
-      const TDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-      const TMONS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      const todayStr = TDAYS[now.getDay()] + ', ' + now.getDate() + ' ' + TMONS[now.getMonth()] + ' ' + now.getFullYear();
-      // cleanDate handles old GMT format AND new clean format
-      function tcCleanDate(raw) {
-        if (!raw) return '';
-        raw = String(raw).trim();
-        if (/^[A-Za-z]+,\s+\d+\s+[A-Za-z]+\s+\d{4}$/.test(raw)) return raw;
-        const d = new Date(raw);
-        if (!isNaN(d.getTime())) {
-          const ist = new Date(d.getTime() + (5.5*60*60*1000));
-          return TDAYS[ist.getUTCDay()] + ', ' + ist.getUTCDate() + ' ' + TMONS[ist.getUTCMonth()] + ' ' + ist.getUTCFullYear();
-        }
-        return raw;
-      }
-      const todayBookings = allBookings.filter(b => tcCleanDate(b['Visit Date'] || '') === todayStr);
+      const todayStr = tcTodayStr();
+      const todayBookings = allBookings.filter(function(b){ return tcCleanDate(b['Visit Date'] || '') === todayStr; });
       document.getElementById('statTotal').textContent = todayBookings.length;
-      document.getElementById('statPending').textContent = allBookings.filter(b => (b['Status']||'').includes('Pending')).length;
-      document.getElementById('statVisited').textContent = allBookings.filter(b => (b['Status']||'').includes('Visited')).length;
-      document.getElementById('recentCount').textContent = `${todayBookings.length} bookings today`;
+      document.getElementById('statPending').textContent = allBookings.filter(function(b){ return (b['Status']||'').toLowerCase().includes('pending'); }).length;
+      document.getElementById('statVisited').textContent = allBookings.filter(function(b){ return (b['Status']||'').toLowerCase().includes('visited'); }).length;
+      document.getElementById('recentCount').textContent = todayBookings.length + ' bookings today';
       renderRecentTable(todayBookings.length ? todayBookings : allBookings.slice(-10).reverse());
     };
+
     const s = document.createElement('script');
     s.id = 'stats-jsonp';
+    s.onerror = function() {
+      clearTimeout(timer);
+      document.getElementById('recentTable').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-light);">Failed to load. Please refresh.</div>';
+      document.getElementById('recentCount').textContent = 'Error';
+    };
     s.src = APPS_SCRIPT_URL + '?callback=__tcCallback&t=' + Date.now();
     document.body.appendChild(s);
   }
@@ -542,22 +563,21 @@
       document.getElementById('recentTable').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-light);">No bookings yet today.</div>';
       return;
     }
-    const rows = bookings.map(b => `
-      <tr>
-        <td><div class="td-ref">${b['Booking Ref']||'—'}</div></td>
-        <td><div class="td-name">${b['Name']||'—'}</div><div class="td-phone">${b['Mobile']||''}</div></td>
-        <td>${tcCleanDate(b['Visit Date']||'')}</td>
-        <td>${b['Time Slot']||'—'}</td>
-        <td>${b['Members']||'—'}</td>
-        <td><span class="${(b['Status']||'').includes('Visited') ? 'badge-visited' : 'badge-pending'}">${b['Status']||'Pending'}</span></td>
-      </tr>`).join('');
-    document.getElementById('recentTable').innerHTML = `
-      <div style="overflow-x:auto;">
-        <table>
-          <thead><tr><th>Ref</th><th>Customer</th><th>Date</th><th>Time</th><th>Members</th><th>Status</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>`;
+    const rows = bookings.map(function(b) {
+      const isV = (b['Status']||'').toLowerCase().includes('visited');
+      return '<tr>' +
+        '<td><div class="td-ref">' + (b['Booking Ref']||'—') + '</div></td>' +
+        '<td><div class="td-name">' + (b['Name']||'—') + '</div><div class="td-phone">' + (b['Mobile']||'') + '</div></td>' +
+        '<td>' + tcCleanDate(b['Visit Date']||'') + '</td>' +
+        '<td>' + (b['Time Slot']||'—') + '</td>' +
+        '<td>' + (b['Members']||'—') + '</td>' +
+        '<td><span class="' + (isV ? 'badge-visited' : 'badge-pending') + '">' + (b['Status']||'Pending') + '</span></td>' +
+        '</tr>';
+    }).join('');
+    document.getElementById('recentTable').innerHTML =
+      '<div style="overflow-x:auto;"><table>' +
+      '<thead><tr><th>Ref</th><th>Customer</th><th>Date</th><th>Time</th><th>Members</th><th>Status</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>';
   }
 
   // ── TOAST ─────────────────────────────────────────────────────
