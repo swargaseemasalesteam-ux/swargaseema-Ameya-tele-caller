@@ -509,10 +509,22 @@
     window.__tcCallback = function(data) {
       allBookings = data.bookings || [];
       const now = new Date();
-      const fullDays2 = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-      const fullMonths2 = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      const todayStr = fullDays2[now.getDay()] + ', ' + now.getDate() + ' ' + fullMonths2[now.getMonth()] + ' ' + now.getFullYear();
-      const todayBookings = allBookings.filter(b => (b['Visit Date'] || '') === todayStr);
+      const TDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      const TMONS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const todayStr = TDAYS[now.getDay()] + ', ' + now.getDate() + ' ' + TMONS[now.getMonth()] + ' ' + now.getFullYear();
+      // cleanDate handles old GMT format AND new clean format
+      function tcCleanDate(raw) {
+        if (!raw) return '';
+        raw = String(raw).trim();
+        if (/^[A-Za-z]+,\s+\d+\s+[A-Za-z]+\s+\d{4}$/.test(raw)) return raw;
+        const d = new Date(raw);
+        if (!isNaN(d.getTime())) {
+          const ist = new Date(d.getTime() + (5.5*60*60*1000));
+          return TDAYS[ist.getUTCDay()] + ', ' + ist.getUTCDate() + ' ' + TMONS[ist.getUTCMonth()] + ' ' + ist.getUTCFullYear();
+        }
+        return raw;
+      }
+      const todayBookings = allBookings.filter(b => tcCleanDate(b['Visit Date'] || '') === todayStr);
       document.getElementById('statTotal').textContent = todayBookings.length;
       document.getElementById('statPending').textContent = allBookings.filter(b => (b['Status']||'').includes('Pending')).length;
       document.getElementById('statVisited').textContent = allBookings.filter(b => (b['Status']||'').includes('Visited')).length;
@@ -534,7 +546,7 @@
       <tr>
         <td><div class="td-ref">${b['Booking Ref']||'—'}</div></td>
         <td><div class="td-name">${b['Name']||'—'}</div><div class="td-phone">${b['Mobile']||''}</div></td>
-        <td>${b['Visit Date']||'—'}</td>
+        <td>${tcCleanDate(b['Visit Date']||'')}</td>
         <td>${b['Time Slot']||'—'}</td>
         <td>${b['Members']||'—'}</td>
         <td><span class="${(b['Status']||'').includes('Visited') ? 'badge-visited' : 'badge-pending'}">${b['Status']||'Pending'}</span></td>
