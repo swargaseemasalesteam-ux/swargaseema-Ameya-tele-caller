@@ -507,6 +507,32 @@
     return raw;
   }
 
+  function tcCleanTime(raw) {
+    if (!raw) return '—';
+    raw = String(raw).trim();
+    // Already clean: "10:00 AM"
+    if (/^\d{1,2}:\d{2}\s*(AM|PM)$/i.test(raw)) return raw;
+    // Extract time from GMT string e.g. "Sat Dec 30 1899 08:30:00 GMT+0521"
+    var match = raw.match(/(\d{2}):(\d{2}):\d{2}\s*GMT([+-])(\d{2})(\d{2})/);
+    if (match) {
+      var rh = parseInt(match[1]);
+      var rm = parseInt(match[2]);
+      var sign = match[3] === '+' ? 1 : -1;
+      var oh = parseInt(match[4]);
+      var om = parseInt(match[5]);
+      // Convert to UTC minutes
+      var utcM = rh * 60 + rm - sign * (oh * 60 + om);
+      // Convert to IST (UTC+5:30)
+      var istM = ((utcM + 330) % 1440 + 1440) % 1440;
+      var h = Math.floor(istM / 60);
+      var m = istM % 60;
+      var ampm = h < 12 ? 'AM' : 'PM';
+      var dh = h % 12 === 0 ? 12 : h % 12;
+      return dh + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+    }
+    return raw;
+  }
+
   function tcTodayStr() {
     const n = new Date();
     return TC_DAYS[n.getDay()] + ', ' + n.getDate() + ' ' + TC_MONS[n.getMonth()] + ' ' + n.getFullYear();
@@ -528,7 +554,10 @@
       clearTimeout(timer);
       allBookings = data.bookings || [];
       const todayStr = tcTodayStr();
-      const todayBookings = allBookings.filter(function(b){ return tcCleanDate(b['Visit Date'] || '') === todayStr; });
+      var todayBookings = allBookings.filter(function(b){
+        var cleaned = tcCleanDate(b['Visit Date'] || '');
+        return cleaned.trim() === todayStr.trim();
+      });
       document.getElementById('statTotal').textContent = todayBookings.length;
       document.getElementById('statPending').textContent = allBookings.filter(function(b){ return (b['Status']||'').toLowerCase().includes('pending'); }).length;
       document.getElementById('statVisited').textContent = allBookings.filter(function(b){ return (b['Status']||'').toLowerCase().includes('visited'); }).length;
@@ -558,7 +587,7 @@
         '<td><div class="td-ref">' + (b['Booking Ref']||'—') + '</div></td>' +
         '<td><div class="td-name">' + (b['Name']||'—') + '</div><div class="td-phone">' + (b['Mobile']||'') + '</div></td>' +
         '<td>' + tcCleanDate(b['Visit Date']||'') + '</td>' +
-        '<td>' + (b['Time Slot']||'—') + '</td>' +
+        '<td>' + tcCleanTime(b['Time Slot']||'') + '</td>' +
         '<td>' + (b['Members']||'—') + '</td>' +
         '<td><span class="' + (isV ? 'badge-visited' : 'badge-pending') + '">' + (b['Status']||'Pending') + '</span></td>' +
         '</tr>';
