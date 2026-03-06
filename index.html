@@ -292,8 +292,15 @@
             <button class="counter-btn" onclick="changeMember(1)">+</button>
           </div>
           <div>
-            <div style="font-weight:600;color:var(--text-mid)" id="cabLabel">🚗 Sedan (1–4 members)</div>
-            <div style="font-size:0.82rem;color:var(--text-light);margin-top:0.2rem;">Cab will be arranged based on group size</div>
+            <div style="font-weight:600;color:var(--text-mid)" id="cabLabel">🚙 SUV (max 6 members)</div>
+            <div style="font-size:0.82rem;color:var(--text-light);margin-top:0.2rem;">Max 6 members per cab</div>
+          </div>
+          <div>
+            <div style="font-size:0.78rem;font-weight:700;color:var(--gold);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.4rem;">🚗 Car Type</div>
+            <select id="carType" style="padding:0.5rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.95rem;color:var(--text-dark);background:#fff;cursor:pointer;min-width:130px;">
+              <option value="Ertiga">Ertiga</option>
+              <option value="Innova">Innova</option>
+            </select>
           </div>
         </div>
       </div>
@@ -410,11 +417,9 @@
 
   // ── MEMBER COUNTER ────────────────────────────────────────────
   function changeMember(d) {
-    memberCount = Math.max(1, Math.min(12, memberCount + d));
+    memberCount = Math.max(1, Math.min(6, memberCount + d));
     document.getElementById('memberVal').textContent = memberCount;
-    document.getElementById('cabLabel').textContent =
-      memberCount <= 4 ? '🚗 Sedan (1–4 members)' :
-      memberCount <= 8 ? '🚙 SUV (5–8 members)' : '🚌 Van (9+ members)';
+    document.getElementById('cabLabel').textContent = '🚙 SUV (max 6 members)';
   }
 
   // ── VALIDATION ────────────────────────────────────────────────
@@ -458,6 +463,7 @@
       date: selectedDate,
       time: selectedTime,
       members: memberCount,
+      carType: document.getElementById('carType').value,
       source: 'Tele-Caller'
     };
     try {
@@ -486,7 +492,8 @@
     document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
     selectedDate = ''; selectedTime = ''; memberCount = 2;
     document.getElementById('memberVal').textContent = '2';
-    document.getElementById('cabLabel').textContent = '🚗 Sedan (1–4 members)';
+    document.getElementById('cabLabel').textContent = '🚙 SUV (max 6 members)';
+    document.getElementById('carType').value = 'Ertiga';
     ['err-name','err-phone','err-city','err-address','err-date','err-time'].forEach(id => document.getElementById(id).textContent = '');
     ['grp-name','grp-phone','grp-city','grp-address'].forEach(id => document.getElementById(id).classList.remove('error'));
   }
