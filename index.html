@@ -300,6 +300,7 @@
             <select id="carType" style="padding:0.5rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.95rem;color:var(--text-dark);background:#fff;cursor:pointer;min-width:130px;">
               <option value="Ertiga">Ertiga</option>
               <option value="Innova">Innova</option>
+              <option value="DSV">DSV</option>
             </select>
           </div>
         </div>
@@ -351,7 +352,7 @@
   // ── DATE GRID ─────────────────────────────────────────────────
   function getUpcomingDates() {
     const d = []; let x = new Date();
-    while (d.length < 4) { if (x.getDay() !== 0) d.push(new Date(x)); x.setDate(x.getDate() + 1); }
+    while (d.length < 4) { d.push(new Date(x)); x.setDate(x.getDate() + 1); }
     return d;
   }
 
