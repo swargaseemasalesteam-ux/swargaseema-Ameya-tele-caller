@@ -260,6 +260,10 @@
             <input type="text" id="fCity" placeholder="e.g. Hyderabad, Mehdipatnam"/>
             <div class="err-msg" id="err-city"></div>
           </div>
+          <div class="form-group" id="grp-occupation">
+            <label>Occupation</label>
+            <input type="text" id="fOccupation" placeholder="e.g. Business, Doctor, Engineer"/>
+          </div>
           <div class="form-group full" id="grp-address">
             <label>Pickup Address for Cab <span>*</span></label>
             <input type="text" id="fAddress" placeholder="Full address for cab pickup"/>
@@ -302,6 +306,53 @@
               <option value="Innova">Innova</option>
               <option value="DSV">DSV</option>
             </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOURCE & TELE-CALLER -->
+      <div class="form-section">
+        <div class="form-grid">
+          <div class="form-group" id="grp-source">
+            <label>📡 Source <span>*</span></label>
+            <select id="fSource" style="padding:0.6rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.95rem;color:var(--text-dark);background:#fff;cursor:pointer;width:100%;">
+              <option value="">-- Select Source --</option>
+              <option>Lead Space</option><option>Bhakti</option><option>ABN</option>
+              <option>TV5</option><option>Sakshi</option><option>ETV AP/TS</option>
+              <option>Metro</option><option>FM</option><option>10TV</option>
+              <option>VNR Digital</option><option>Hindu Darma</option><option>Auto Ads</option>
+              <option>YouTube</option><option>SS2 YouTube</option><option>Facebook</option>
+              <option>ABN Digital</option><option>Bakthi Doc</option><option>ABN Doc</option>
+              <option>TV5 Doc</option><option>ETV AP/TS Doc</option><option>Sakshi Doc</option>
+              <option>V6 Doc</option><option>Enadu Magazine</option><option>AJ Magazine</option>
+              <option>Enadu PA</option><option>AJ PA</option><option>Sakshi PA</option>
+              <option>Economic Times PA</option><option>Hindu PA</option><option>Other PA</option>
+              <option>Hoardings</option><option>Vijayawada Hor</option><option>Gated Community</option>
+              <option>Restaurant</option><option>ETV Life</option><option>ETV Win</option>
+              <option>HMTV</option><option>Maha News</option><option>CVR News</option>
+              <option>Prime 9</option><option>Bhanu digital</option><option>V6</option>
+              <option>Website</option><option>BK Channel</option><option>NTV</option>
+              <option>RCS Msg</option><option>Web enquiry</option><option>Bulk data</option>
+              <option>Credai</option><option>Reference</option><option>Outgoing</option>
+              <option>EX-Owner</option>
+            </select>
+            <div class="err-msg" id="err-source"></div>
+          </div>
+          <div class="form-group" id="grp-telecaller">
+            <label>🎧 Tele-Caller Name <span>*</span></label>
+            <select id="fTeleCaller" style="padding:0.6rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.95rem;color:var(--text-dark);background:#fff;cursor:pointer;width:100%;">
+              <option value="">-- Select Tele-Caller --</option>
+              <option>Kumari</option><option>Lahari</option><option>Tejaswini</option>
+              <option>Deepthi</option><option>Sailaja</option><option>Likhitha</option>
+              <option>Iswarya</option><option>Bhargavi</option><option>Sindhuja</option>
+              <option>Kaveri</option><option>Raj kumari</option><option>Sridevi</option>
+              <option>Madhavi</option><option>Rama</option><option>Suguna</option>
+              <option>Ranjitha</option><option>Sravanthi</option><option>Keerthi</option>
+              <option>Sravani</option><option>Aparna</option><option>Soujanya</option>
+              <option>Anusha</option><option>Hari Priya</option><option>Sahini</option>
+              <option>Nasreen</option><option>Shivani</option><option>Revathi</option>
+            </select>
+            <div class="err-msg" id="err-telecaller"></div>
           </div>
         </div>
       </div>
@@ -445,6 +496,14 @@
     });
     if (!selectedDate) { document.getElementById('err-date').textContent = 'Please select a visit date'; ok = false; }
     if (!selectedTime) { document.getElementById('err-time').textContent = 'Please select a time slot'; ok = false; }
+    if (!document.getElementById('fSource').value) {
+      document.getElementById('grp-source').classList.add('error');
+      document.getElementById('err-source').textContent = 'Please select a source'; ok = false;
+    } else { document.getElementById('grp-source').classList.remove('error'); document.getElementById('err-source').textContent = ''; }
+    if (!document.getElementById('fTeleCaller').value) {
+      document.getElementById('grp-telecaller').classList.add('error');
+      document.getElementById('err-telecaller').textContent = 'Please select tele-caller name'; ok = false;
+    } else { document.getElementById('grp-telecaller').classList.remove('error'); document.getElementById('err-telecaller').textContent = ''; }
     return ok;
   }
 
@@ -460,12 +519,14 @@
       phone: document.getElementById('fPhone').value.trim(),
       email: document.getElementById('fEmail').value.trim(),
       city: document.getElementById('fCity').value.trim(),
+      occupation: document.getElementById('fOccupation').value.trim(),
       address: document.getElementById('fAddress').value.trim(),
       date: selectedDate,
       time: selectedTime,
       members: memberCount,
       carType: document.getElementById('carType').value,
-      source: 'Tele-Caller'
+      source: document.getElementById('fSource').value,
+      teleCaller: document.getElementById('fTeleCaller').value
     };
     try {
       await fetch(APPS_SCRIPT_URL, {
@@ -485,7 +546,7 @@
 
   // ── RESET ─────────────────────────────────────────────────────
   function resetForm() {
-    ['fName','fPhone','fEmail','fCity','fAddress'].forEach(id => document.getElementById(id).value = '');
+    ['fName','fPhone','fEmail','fCity','fAddress','fOccupation'].forEach(id => document.getElementById(id).value = '');
     document.querySelectorAll('.date-card').forEach(c => {
       c.classList.remove('selected');
       c.querySelector('.dc-check').style.display = 'none';
@@ -495,8 +556,10 @@
     document.getElementById('memberVal').textContent = '2';
     document.getElementById('cabLabel').textContent = '🚙 SUV (max 6 members)';
     document.getElementById('carType').value = 'Ertiga';
-    ['err-name','err-phone','err-city','err-address','err-date','err-time'].forEach(id => document.getElementById(id).textContent = '');
-    ['grp-name','grp-phone','grp-city','grp-address'].forEach(id => document.getElementById(id).classList.remove('error'));
+    document.getElementById('fSource').value = '';
+    document.getElementById('fTeleCaller').value = '';
+    ['err-name','err-phone','err-city','err-address','err-date','err-time','err-source','err-telecaller'].forEach(id => document.getElementById(id).textContent = '');
+    ['grp-name','grp-phone','grp-city','grp-address','grp-source','grp-telecaller'].forEach(id => document.getElementById(id).classList.remove('error'));
   }
 
   // ── DATE HELPERS (global scope) ──────────────────────────────
