@@ -340,7 +340,7 @@
           </div>
           <div class="form-group" id="grp-telecaller">
             <label>🎧 Tele-Caller Name <span>*</span></label>
-            <select id="fTeleCaller" style="padding:0.6rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.95rem;color:var(--text-dark);background:#fff;cursor:pointer;width:100%;">
+            <select id="fTeleCaller" style="padding:0.6rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.95rem;color:var(--text-dark);background:#fff;cursor:pointer;width:100%;" onchange="var o=document.getElementById('fTeleCallerOther');o.style.display=this.value==='Other'?'block':'none';if(this.value!=='Other')o.value='';">
               <option value="">-- Select Tele-Caller --</option>
               <option>Kumari</option><option>Lahari</option><option>Tejaswini</option>
               <option>Deepthi</option><option>Sailaja</option><option>Likhitha</option>
@@ -351,7 +351,11 @@
               <option>Sravani</option><option>Aparna</option><option>Soujanya</option>
               <option>Anusha</option><option>Hari Priya</option><option>Sahini</option>
               <option>Nasreen</option><option>Shivani</option><option>Revathi</option><option>Sirisha</option>
+              <option value="Other">Other</option>
+              <option value="Other">Other</option>
             </select>
+            <input type="text" id="fTeleCallerOther" placeholder="Enter your name" style="display:none;margin-top:0.5rem;padding:0.6rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.95rem;color:var(--text-dark);background:#fff;width:100%;box-sizing:border-box;"/>
+
             <div class="err-msg" id="err-telecaller"></div>
           </div>
         </div>
@@ -500,9 +504,11 @@
       document.getElementById('grp-source').classList.add('error');
       document.getElementById('err-source').textContent = 'Please select a source'; ok = false;
     } else { document.getElementById('grp-source').classList.remove('error'); document.getElementById('err-source').textContent = ''; }
-    if (!document.getElementById('fTeleCaller').value) {
+    const tcVal = document.getElementById('fTeleCaller').value;
+    const tcOther = document.getElementById('fTeleCallerOther').value.trim();
+    if (!tcVal || (tcVal === 'Other' && !tcOther)) {
       document.getElementById('grp-telecaller').classList.add('error');
-      document.getElementById('err-telecaller').textContent = 'Please select tele-caller name'; ok = false;
+      document.getElementById('err-telecaller').textContent = tcVal === 'Other' ? 'Please enter your name' : 'Please select tele-caller name'; ok = false;
     } else { document.getElementById('grp-telecaller').classList.remove('error'); document.getElementById('err-telecaller').textContent = ''; }
     return ok;
   }
@@ -526,7 +532,7 @@
       members: memberCount,
       carType: document.getElementById('carType').value,
       source: document.getElementById('fSource').value,
-      teleCaller: document.getElementById('fTeleCaller').value
+      teleCaller: (document.getElementById('fTeleCaller').value === 'Other' ? document.getElementById('fTeleCallerOther').value.trim() : document.getElementById('fTeleCaller').value)
     };
     try {
       await fetch(APPS_SCRIPT_URL, {
@@ -558,6 +564,8 @@
     document.getElementById('carType').value = 'Ertiga';
     document.getElementById('fSource').value = '';
     document.getElementById('fTeleCaller').value = '';
+    document.getElementById('fTeleCallerOther').style.display = 'none';
+    document.getElementById('fTeleCallerOther').value = '';
     ['err-name','err-phone','err-city','err-address','err-date','err-time','err-source','err-telecaller'].forEach(id => document.getElementById(id).textContent = '');
     ['grp-name','grp-phone','grp-city','grp-address','grp-source','grp-telecaller'].forEach(id => document.getElementById(id).classList.remove('error'));
   }
