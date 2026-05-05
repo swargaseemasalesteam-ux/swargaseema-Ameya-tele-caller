@@ -451,14 +451,13 @@
   function buildTimeGrid() {
     const g = document.getElementById('timeGrid');
     const slots = [];
-    let h = 7, m = 0;
-    while (!(h === 14 && m === 30)) {
+    let h = 6, m = 0;
+    while (!(h === 18 && m === 0)) {
       const s = h < 12 ? 'AM' : 'PM';
       const dh = h > 12 ? h - 12 : h;
       slots.push(`${dh}:${m === 0 ? '00' : '30'} ${s}`);
       m += 30; if (m === 60) { m = 0; h++; }
     }
-    slots.push('2:30 PM');
     slots.forEach(slot => {
       const el = document.createElement('div');
       el.className = 'time-slot'; el.textContent = slot;
